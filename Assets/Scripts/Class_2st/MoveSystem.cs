@@ -11,6 +11,9 @@ public class MoveSystem : MonoBehaviour
     public bool isMoving = false;
 
     public GameObject tankGFX;
+    public GameObject tankHeadGFX;
+
+    public SpriteRenderer triangleSprite;
 
     public void OnMove(InputValue value)
     {
@@ -27,6 +30,7 @@ public class MoveSystem : MonoBehaviour
     {
         LetsMove();
         LetsLook();
+        TriangleColorChanger();
     }
 
     void LetsMove()
@@ -50,6 +54,18 @@ public class MoveSystem : MonoBehaviour
         {
             float angle = Mathf.Atan2(moveInput.y, moveInput.x) * Mathf.Rad2Deg;
             tankGFX.transform.rotation = Quaternion.Euler(0f, -angle + 90, 0f);
+        }
+    }
+
+    void TriangleColorChanger()
+    {
+        if(isMoving == true)
+        {
+            triangleSprite.color = Color.black;
+        }
+        else
+        {
+            triangleSprite.color = Color.white;
         }
     }
 }
