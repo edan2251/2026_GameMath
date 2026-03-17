@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        Vector3 direction = new Vector3(moveInput.x, moveInput.y, 0);
+        Vector3 direction = new Vector3(moveInput.x, 0, moveInput.y);
 
         float sqrMagnitude = direction.x * direction.x + direction.y * direction.y + direction.z * direction.z;
         float magnitude = Mathf.Sqrt(sqrMagnitude);
