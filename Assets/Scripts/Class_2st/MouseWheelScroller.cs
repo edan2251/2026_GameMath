@@ -7,8 +7,13 @@ public class MouseWheelScroller : MonoBehaviour
     public float sensitivity = 0.05f;
 
     public MoveSystem moveSystem;
-    public Transform arrowTransform;
     
+    void Start()
+    {
+        Vector3 currentHeadAngle = moveSystem.tankHeadGFX.transform.localEulerAngles;
+        currentAngle = 90f - currentHeadAngle.y;
+    }
+
     void Update()
     {
         Scroller();
@@ -24,8 +29,7 @@ public class MouseWheelScroller : MonoBehaviour
 
             currentAngle = Mathf.Repeat(currentAngle, 360f);
 
-            arrowTransform.localRotation = Quaternion.Euler(90f, -currentAngle, 0f);
-            moveSystem.tankHeadGFX.transform.rotation = Quaternion.Euler(0f, -currentAngle + 90, 0f);
+            moveSystem.tankHeadGFX.transform.localRotation = Quaternion.Euler(0f, -currentAngle + 90, 0f);
         }
     }
 }

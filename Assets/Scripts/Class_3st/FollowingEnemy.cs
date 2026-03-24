@@ -2,23 +2,31 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AdaptivePerformance;
+using UnityEngine.SceneManagement;
 
 public class FollowingEnemy : MonoBehaviour
 {
     public Transform player;
+    public ParrySystem parrySystem;
     public float viewAngle = 60f;
     public float rotationAngle = 30f;
 
     public float viewDistance = 5f;
+    public float parryAbleDistance = 5f;
+    public float playerKillDistance = 3f;
 
     public Material[] enemyColor;
 
     public bool isPlayerInSight = false;
+    public bool isAddedToSystem = false;
+
+    public Transform enemy;
 
 
 
     void Start()
     {
+        enemy = this.transform;
         this.GetComponent<MeshRenderer>().material = enemyColor[0];
     }
 
@@ -45,24 +53,59 @@ public class FollowingEnemy : MonoBehaviour
 
         if(angle < viewAngle / 2 && magnitude <= viewDistance)
         {
-            Debug.Log("플레이어가 시야 안에 있음");
+            //Debug.Log("플레이어가 시야 안에 있음");
             this.GetComponent<MeshRenderer>().material = enemyColor[1];
             isPlayerInSight = true;
+
+            if (isAddedToSystem == false)
+            {
+                parrySystem.AddEnemy(this);
+                isAddedToSystem = true;
+            }
+
+            if (playerKillDistance <= magnitude && magnitude <= parryAbleDistance)
+            {
+                parrySystem.canParry = true;
+                //Debug.Log("패링 가능");
+            }
+            else if(magnitude <= playerKillDistance && magnitude <= parryAbleDistance)
+            {
+                //Debug.Log("플레이어 사망");
+                parrySystem.canParry = false;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+            else
+            {
+                //Debug.Log("패링 불가능");
+                parrySystem.canParry = false;
+            }    
         }
         else
         {
             this.GetComponent<MeshRenderer>().material = enemyColor[0];
             isPlayerInSight = false;
+
+            if (isAddedToSystem == true)
+            {
+                parrySystem.RemoveEnemy(this);
+                isAddedToSystem = false;
+            }
         }
 
         if(isPlayerInSight == true)
         {
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-            Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+            Quaternion targetRotation = Quaternion.LookRotation(toPlayer);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
             
+            transform.Translate(Vector3.forward * Time.deltaTime * 2f);
         }
     }
+
+    public void DestroyEnemy()
+    {
+        Destroy(gameObject);
+    }
+
 
     void OnDrawGizmos()
     {
@@ -76,8 +119,14 @@ public class FollowingEnemy : MonoBehaviour
         Gizmos.DrawRay (transform.position, leftBoundary);
         Gizmos.DrawRay (transform.position, rightBoundary);
 
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.blue;
         Gizmos.DrawRay(transform.position, forward);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, parryAbleDistance);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, playerKillDistance);
 
     }
 }

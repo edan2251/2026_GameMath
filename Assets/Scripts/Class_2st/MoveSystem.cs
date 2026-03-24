@@ -53,8 +53,13 @@ public class MoveSystem : MonoBehaviour
     {
         if (moveInput.sqrMagnitude > 0.01f)
         {
+            isMoving = true;
             Quaternion rotation = Quaternion.Euler(0f, moveInput.x * rotationSpeed * Time.deltaTime, 0f);
             transform.localRotation = rotation * transform.localRotation;
+        }
+        else
+        {
+            isMoving = false;
         }
     }
 
