@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class MoveSystem : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    public float rotationSpeed = 100f;
     public Vector2 moveInput;
 
     Vector3 normalizedVector;
@@ -35,7 +36,7 @@ public class MoveSystem : MonoBehaviour
 
     void LetsMove()
     {
-        Vector3 direction = new Vector3(moveInput.x, 0, moveInput.y);
+        Vector3 direction = new Vector3(0, 0, moveInput.y);
 
         float sqrMagnitude = direction.x * direction.x + direction.y * direction.y + direction.z * direction.z;
         float magnitude = Mathf.Sqrt(sqrMagnitude);
@@ -45,15 +46,15 @@ public class MoveSystem : MonoBehaviour
 
         transform.Translate(normalizedVector * moveSpeed * Time.deltaTime);
 
-        if(magnitude == 0) isMoving = false;
+        if (magnitude == 0) isMoving = false;
     }
 
     void LetsLook()
     {
         if (moveInput.sqrMagnitude > 0.01f)
         {
-            float angle = Mathf.Atan2(moveInput.y, moveInput.x) * Mathf.Rad2Deg;
-            tankGFX.transform.rotation = Quaternion.Euler(0f, -angle + 90, 0f);
+            Quaternion rotation = Quaternion.Euler(0f, moveInput.x * rotationSpeed * Time.deltaTime, 0f);
+            transform.localRotation = rotation * transform.localRotation;
         }
     }
 
